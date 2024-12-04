@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Model</title>
+    <link rel="icon" type="image/x-icon" href="../static/logos.ico">
+    <style>
+        body {
+            background-color: #4b4a4a;
+            font-family: Arial, sans-serif;
+            background-image: url(../static/bgi.png);
+            margin: 0;
+            padding: 0;
+            background-attachment: fixed;
+            background-size: cover;
+            text-align: center;
+        }
+
+        .title {
+            margin: 0;
+            padding: 30px;
+            font-size: 60px;
+            color: rgb(252, 229, 21);
+            font-weight: 700;
+        }
+
+        .container {
+            display: inline-block;
+            height: 800px;
+            border: #6a6a6a 2px;
+            border-radius: 40px;
+            border-style: dashed;
+            width: 500px;
+            margin: 10px auto 0 auto;
+            background-color: rgba(82, 82, 82, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container:hover {
+            background-color: rgba(18, 18, 18, 0.6);
+        }
+        h1 {
+            font-size: 40px;
+            text-align: center;
+            color: rgba(255, 235, 51, 0.7);
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 30px;
+            color: #ffe88a;
+        }
+        p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            background-color: rgba(255, 235, 51, 0.7);
+            color: rgba(255, 255, 255, 0.6);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        button:hover {
+            background-color: rgba(168, 159, 78, 0.8);
+            color:rgba(251, 228, 24, 0.8)
+        }
+        button:active {
+            background-color: rgba(255, 235, 51, 0.7);
+            color: rgba(255, 255, 255, 0.6);
+        }
+        button:disabled {
+            background-color: rgba(129, 129, 129, 0.5);
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
+
+        .step {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .result {
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 30px;
+            color: gold;
+        }
+
+        /* Step bar styling */
+        .step-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .step-bar div {
+            width: 24%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            border-radius: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .step-bar .active-step {
+            background-color: rgba(255, 240, 107, 0.7);
+            color: white;
+        }
+
+        .loader {
+            display: none;
+            border: 13px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            border-top: 13px solid rgba(251, 228, 24, 0.8);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        .hiddentext {
+            display:none;
+            text-align: center;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            display:none;
+            text-align: center;
+            font-size: 30px;
+            color: #fae890;
+        }
+        .uploadfile {
+            border:#ffe88a 1px;
+            border-style: dotted;
+            background-color: rgba(168, 159, 78, 0.3);
+            color:rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            border-radius: 5px;
+        }
+        .previewImage {
+            display: flex;
+            height: 150;
+            width: 300;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">Face Recognition System</div>
+    <h2>When you want to train a new model, you have to <strong>Clear the contents of the folder 'user faces'!</strong></h2>
+    <div class="container">
+        <h1>FRS</h1>
+        <hr>
+        <!-- Step bar -->
+        <div class="step-bar" id="step-bar">
+            <div id="step-indicator-1" class="active-step">Step 1</div>
+            <div id="step-indicator-2">Step 2</div>
+            <div id="step-indicator-3">Step 3</div>
+            <div id="step-indicator-4">Step 4</div>
+        </div>
+
+
+
+        <div id="step-1" class="step active">
+            <h2>Step 1: Capture User Faces</h2>
+            <p>Use the camera to capture multiple photos of your face.</p>
+            <button id="capture-btn">Capture Faces by Camera</button>
+            <button id = "Trainned-before">I trainned the model before, judge face straightly.</button>
+        </div>
+
+
+        <div id="step-2" class="step">
+            <h2>Step 2: Load Other Faces</h2>
+            <p>We offer lots of others' faces, you just need to click button below and we will upload them.</p>
+            <button id="load-others-btn">Load Other Faces from Stored Photos</button>
+        </div>
+
+        <div id="step-3" class="step">
+            <h2>Step 3: Train Model</h2>
+            <p>Use the photos of faces to train <a href="https://baike.baidu.com/item/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/17541100?fr=ge_ala">
+                CNN</a> model and save the model with high accuracy.</p>
+            <button id="train-model-btn">Train Model</button>
+        </div>
+
+        <div id="step-4" class="step">
+            <h2>Step 4: Face Recognition</h2>
+            <p>The result will be shown while showing your face</p>
+            <button id="judge-camera-btn">Judge User Face by Camera</button>
+        </div>
+        <!-- Loader -->
+        <div id="loader" class="loader"></div>
+        <div id="loading-text" class="loading-text">Processing...</div>
+        <div id="hidden-text" class="hiddentext">You can see faces captured in pop-up.</div>
+    </div>
+    <script>
+        // DOM 元素选择
+        const captureBtn = document.getElementById('capture-btn');
+        const trainnedBtn = document.getElementById('Trainned-before')
+        const loadOthersBtn = document.getElementById('load-others-btn');
+        const trainModelBtn = document.getElementById('train-model-btn');
+        const judgeCameraBtn = document.getElementById('judge-camera-btn');
+        const judgeUploadBtn = document.getElementById('judge-upload-btn');
+        const uploadPhotoInput = document.getElementById('upload-photo');
+        const resultDiv = document.getElementById('result');
+        const loader = document.getElementById('loader');
+        const loadingText = document.getElementById('loading-text');
+        const hiddentext = document.getElementById('hidden-text');
+
+        const steps = [
+            document.getElementById('step-1'),
+            document.getElementById('step-2'),
+            document.getElementById('step-3'),
+            document.getElementById('step-4')
+        ];
+
+        const stepIndicators = [
+            document.getElementById('step-indicator-1'),
+            document.getElementById('step-indicator-2'),
+            document.getElementById('step-indicator-3'),
+            document.getElementById('step-indicator-4')
+        ];
+
+        let currentStep = 0;
+
+        // 切换步骤
+        function showNextStep() {
+            steps[currentStep].classList.remove('active');
+            stepIndicators[currentStep].classList.remove('active-step');
+            currentStep++;
+            if (currentStep < steps.length) {
+                steps[currentStep].classList.add('active');
+                stepIndicators[currentStep].classList.add('active-step');
+            }
+        }
+        function showLastStep() {
+            steps[currentStep].classList.remove('active');
+            stepIndicators[currentStep].classList.remove('active-step');
+            currentStep = 3;
+            steps[currentStep].classList.add('active');
+            stepIndicators[currentStep].classList.add('active-step');
+        }
+
+        // 显示/隐藏加载动画
+        function showLoader() {
+            loader.style.display = 'block';
+            loadingText.style.display = 'block';
+        }
+
+        function hideLoader() {
+            loader.style.display = 'none';
+            loadingText.style.display = 'none';
+        }
+        function showtext() {
+            hiddentext.style.display = 'block';
+        }
+        function hidetext() {
+            hiddentext.style.display = 'none';
+        }
+
+        // 步骤 1: 获取用户脸部照片
+        captureBtn.addEventListener('click', function () {
+            showLoader();
+            showtext();
+            fetch('/api/get_user_faces_by_cap')
+                .then(response => response.json())
+                .then(data => {
+                    alert("User faces have been captured and saved successfully.");
+                    showNextStep();
+                })
+                .catch(error => {
+                    console.error("Error capturing user faces:", error);
+                    alert("Error capturing user faces.");
+                })
+                .finally(() => {
+                    hideLoader();
+                    hidetext();
+                });
+        });
+        trainnedBtn.addEventListener('click', function() {
+            showLoader()
+            fetch('/api/find_model')
+            .then(response => response.json())
+            .then(data => {
+                alert("Find the model successfully.");
+                showLastStep();
+            })
+            .catch(error => {
+                console.error("Error finding models saved:", error);
+                alert("You have not trainned any model!");
+            })
+            .finally(() => {
+                hideLoader();
+            })
+        });
+
+        // 步骤 2: 加载其他人脸数据
+        loadOthersBtn.addEventListener('click', function () {
+            showLoader();
+            showtext()
+            fetch('/api/set_others_faces')
+                .then(response => response.json())
+                .then(data => {
+                    alert("Other faces loaded successfully.");
+                    showNextStep();
+                })
+                .catch(error => {
+                    console.error("Error loading other faces:", error);
+                    alert("Error loading other faces.");
+                })
+                .finally(() => {
+                    hideLoader();
+                    hidetext();
+                });
+        });
+
+        // 步骤 3: 训练模型
+        trainModelBtn.addEventListener('click', function () {
+            showLoader();
+            fetch('/api/train_cnn', {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Model training complete !");
+                    showNextStep();
+                })
+                .catch(error => {
+                    console.error("Error training model:", error);
+                    alert("Error training model.");
+                })
+                .finally(() => {
+                    hideLoader();
+                });
+        });
+
+        // 步骤 4: 进行人脸识别
+
+        judgeCameraBtn.addEventListener('click', function () {
+            showLoader();
+            showtext();
+            fetch('/api/judge_user_face_by_cap')
+                .then(response => response.json())
+                .then(data => {
+                    alert("Stop Recognition!");
+                })
+                .catch(error => {
+                    console.error("Error judging user face from camera:", error);
+                    alert("Error judging user face from camera.");
+                })
+                .finally(() => {
+                    hideLoader();
+                    hidetext();
+                });
+        });
+    </script>
+
+</body>
+
+</html>
